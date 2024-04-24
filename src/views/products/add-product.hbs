@@ -1,0 +1,158 @@
+{{!-- Head --}}
+<title>Add Product</title>
+{{!-- Body --}}
+
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">Product /</span><span> Add Product</span>
+        </h4>
+
+        <div class="app-ecommerce">
+            <!-- Add Product -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <div class="d-flex flex-column justify-content-center">
+                    <h4 class="mb-1 mt-3">Add a new Product</h4>
+                    <p class="text-muted">Orders placed across your store</p>
+                </div>
+            </div>
+
+            <form action="/products/add-product" method="POST" enctype="multipart/form-data" id="addProductForm">
+                <div class="row">
+                    <div class="col-12 col-lg-8">
+                        <!-- Product Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-tile mb-0">Product information</h5>
+                            </div>
+                            <div class="card-body">
+                                {{!-- Name --}}
+                                <div>
+                                    <label class="form-label" for="pro_name">Name</label>
+                                    <input type="text" class="form-control" id="pro_name" placeholder="Product Name"
+                                        name="pro_name" aria-label="Product Name">
+                                </div>
+                                {{!-- Category --}}
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label" for="ProductCategory">Category</label>
+                                        <select id="ProductCategory" class="form-select text-capitalize"
+                                            name="category">
+                                            <option value="Phone">Phone</option>
+                                            <option value="Accessories">Accessories</option>
+                                            <option value="Tablet">Tablet</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <div class="col"><label class="form-label"
+                                                for="quantity">Quantity</label>
+                                            <input type="text" class="form-control" id="quantity"
+                                                placeholder="100" name="amount"
+                                                aria-label="Quantity">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Description -->
+                                <div>
+                                    <label class="form-label">Description
+                                        <span class="text-muted">(Optional)</span>
+                                    </label>
+                                    <textarea class="form-control" id="textareaInput" rows="5"
+                                        placeholder="Enter description" name="description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{!-- Price --}}
+                    <div class="col-12 col-lg-4">
+                        <!-- Pricing Card -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Pricing</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- import Price -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="import_price">Import Price</label>
+                                    <input type="number" class="form-control" id="import_price"
+                                        placeholder="Import Price" name="import_price" aria-label="import price">
+                                </div>
+                                <!-- Discounted Price -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="retail_price">Retail
+                                        Price</label>
+                                    <input type="number" class="form-control" id="retail_price"
+                                        placeholder="Retail Price" name="retail_price"
+                                        aria-label="Product discounted price">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0 mb-4">Media</h5>
+                                <span id="btnBrowse">
+                                    <input type="file" name="product_image" multiple id="fileInput">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{!-- submit --}}
+                <div class="d-flex justify-content-center align-items-center">
+                    <button class="btn btn-label-secondary">Discard</button>
+                    <button type="submit" class="btn btn-primary ml-2" id="btnAddProduct">Add product</button>
+                </div>
+            </form>
+            <div id="error-message" class="alert alert-danger mt-2 d-none" role="alert">
+            </div>
+        </div>
+    </div>
+    <div class="content-backdrop fade"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById("btnAddProduct").addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            var errorMessage = document.getElementById("error-message");
+
+            var productName = document.getElementById("pro_name").value.trim();
+            var category = document.getElementById("ProductCategory").value.trim();
+            var quantity = document.getElementById("quantity").value.trim();
+            var importPrice = document.getElementById("import_price").value.trim();
+            var retailPrice = document.getElementById("retail_price").value.trim();
+            var fileInput = document.getElementById("fileInput");
+
+            var missingFields = [];
+
+            if (!productName) {
+                missingFields.push("Product Name");
+            }
+            if (!category) {
+                missingFields.push("Category");
+            }
+            if (!quantity) {
+                missingFields.push("Quantity");
+            }
+            if (!importPrice) {
+                missingFields.push("Import Price");
+            }
+            if (!retailPrice) {
+                missingFields.push("Retail Price");
+            }
+            if (!fileInput.files.length) {
+                missingFields.push("Product Image");
+            }
+
+            if (missingFields.length > 0) {
+                errorMessage.textContent = "Please fill in the following fields: " + missingFields.join(", ");
+                errorMessage.classList.remove("d-none");
+            } else {
+                // Perform form submission if all fields are filled
+                document.getElementById("addProductForm").submit(); // Replace "addProductForm" with your actual form ID
+            }
+        });
+    });
+</script>
+

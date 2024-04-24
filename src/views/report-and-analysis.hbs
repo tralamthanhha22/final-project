@@ -1,0 +1,357 @@
+{{!-- Head --}}
+<title>Report & Analysis</title>
+{{!-- Body --}}
+<div class="content-wrapper">
+  {{#each transactions}}
+  <div id="orders" hidden>
+    {
+    "trans_id":"{{trans_id}}",
+    "aid":"{{aid}}",
+    "createdAt":"{{createdAt}}",
+    "total":"{{total}}",
+    "totalProduct": "{{totalProduct}}"
+    }
+  </div>
+  {{/each}}
+
+  {{#each products}}
+  <div id="products" hidden>
+    {
+    "name":"{{pro_name}}",
+    "amount":"{{amount}}",
+    "createdAt":"{{createdAt}}"
+    }
+  </div>
+  {{/each}}
+  
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="py-3 mb-4">
+      <span class="text-muted fw-light">Report & Analysis</span>
+    </h4>
+    <a href="/transactions/report-and-analysis/products-buy-rates" class="btn btn-primary m-3">Sale Rate of Products</a><br>
+
+    <div class="row">
+      <!-- Report -->
+      <div class="col-xl-5 col-12 mb-4">
+        <div class="card">
+          <div class="card-header header-elements">
+            <h5 class="card-title mb-0">Report of Orders</h5>
+            <div class="card-action-element ms-auto py-0">
+              <div class="dropdown">
+                <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown"
+                  aria-expanded="false"><i class="bx bx-calendar"></i></button>
+                <ul class="dropdown-menu dropdown-menu-end" style="">
+                  <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a></li>
+                  <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a></li>
+                  <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a></li>
+                  <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" id="select-day"
+                      data-bs-toggle="modal" data-bs-target="#basicModal">Select Day</a>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sale-results">
+              <p>Total Amount Received: <span id="total-amount"></span></p>
+              <p>Number of Orders: <span id="total-orders"></span></p>
+              <p>Number of Products: <span id="total-products"></span></p>
+              <p>List of Orders: </p>
+              <div style="height: 550px; overflow-y: scroll;">
+                <ol id="orders-list" class="list-group list-group-numbered">
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders chart-->
+      <div class="col-xl-7 col-12 mb-4">
+        <div class="card">
+          <div class="card-header header-elements">
+            <div class="d-flex flex-column">
+              <h5 class="card-title mb-0">Number of Orders</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <canvas id="orders-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="card mt-5">
+          <div class="card-header header-elements">
+            <div class="d-flex flex-column">
+              <h5 class="card-title mb-0">Number of Products in Inventory</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <canvas id="products-chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Modal for select day--}}
+<div class="modal fade" id="basicModal" tabindex="-1" aria-modal="true" role="dialog" style="display: none;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel1">Select day</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col mb-0">
+            <label for="dateFrom" class="form-label">From</label>
+            <input type="date" id="dateFrom" class="form-control">
+          </div>
+          <div class="col mb-0">
+            <label for="dateTo" class="form-label">To</label>
+            <input type="date" id="dateTo" class="form-control">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="selectBtn" data-bs-dismiss="modal">Select</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  //=========================== CALCULATE REPORT ==================================== 
+  const orderDivs = document.querySelectorAll('#orders');
+  let customOrders;
+
+  // Create an array to store the orders
+  const orders = [];
+  orderDivs.forEach(orderDiv => {
+    const jsonData = orderDiv.textContent.trim();
+    const order = JSON.parse(jsonData);
+    orders.push(order);
+  });
+
+  document.getElementById('selectBtn').addEventListener('click', function () {
+    const dateFromInput = document.getElementById('dateFrom');
+    const dateToInput = document.getElementById('dateTo');
+    let fromDate = new Date(dateFromInput.value);
+    let toDate = new Date(dateToInput.value);
+    customOrders = orders.filter(order => new Date(order.createdAt) >= fromDate && new Date(order.createdAt) <= toDate);
+    handleCalendarSelection(customOrders);
+  });
+
+  // Get the current date
+  const currentDate = new Date();
+
+  // Calculate the start and end dates for different timelines
+  const today = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+  const yesterday = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 1);
+  const sevenDaysAgo = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 7);
+  const thirtyDaysAgo = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - 30);
+
+  // Filter orders based on different timelines
+  const todayOrders = orders.filter(order => new Date(order.createdAt) >= today);
+  const yesterdayOrders = orders.filter(order => new Date(order.createdAt) >= yesterday && new Date(order.createdAt) < today);
+  const sevenDaysOrders = orders.filter(order => new Date(order.createdAt) >= sevenDaysAgo && new Date(order.createdAt) <= today);
+  const thirtyDaysOrders = orders.filter(order => new Date(order.createdAt) >= thirtyDaysAgo && new Date(order.createdAt) <= today);
+
+  // Calculate sales results for each timeline
+  const calculateSalesResults = (orderList) => {
+    const orderDetails = orderList.map(order => {
+      return {
+        trans_id: order.trans_id,
+        total: parseFloat(order.total),
+        createdAt: order.createdAt
+      };
+    });
+
+    orderDetails.sort((a, b) => {
+      const aCreatedAt = new Date(a.createdAt);
+      const bCreatedAt = new Date(b.createdAt);
+      return bCreatedAt - aCreatedAt;
+    });
+
+    const totalAmountReceived = orderList.reduce((total, order) => {
+      return total + parseFloat(order.total);
+    }, 0);
+
+    let totalProducts = 0;
+
+    orderList.forEach(order => {
+      const totalProduct = parseInt(order.totalProduct);
+      totalProducts += totalProduct;
+    });
+
+    const numberOfOrders = orderList.length;
+
+    return {
+      orderDetails,
+      totalAmountReceived,
+      numberOfOrders,
+      totalProducts
+    };
+  };
+
+  function formatCurrency(amount, currencyCode, locale = 'en-US') {
+    const formattedAmount = amount.toLocaleString(locale, {
+      style: 'currency',
+      currency: currencyCode
+    });
+
+    // Remove trailing .00 if present
+    const trimmedAmount = formattedAmount.replace(/\.00$/, '');
+
+    return trimmedAmount;
+  }
+
+  function formatDate(date) {
+    const options = {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    };
+    return new Date(date).toLocaleDateString("en-US", options);
+  }
+
+  // Function to populate the sales results in the HTML
+  const populateSalesResults = (salesResults) => {
+    document.getElementById('total-amount').textContent = formatCurrency(salesResults.totalAmountReceived, 'USD');
+    document.getElementById('total-orders').textContent = salesResults.numberOfOrders;
+    document.getElementById('total-products').textContent = salesResults.totalProducts;
+
+    const ordersListElement = document.getElementById('orders-list');
+    ordersListElement.innerHTML = '';
+
+    salesResults.orderDetails.forEach(order => {
+      const orderElement = document.createElement('li');
+      orderElement.classList.add('list-group-item');
+
+      const idLabel = document.createElement('span');
+      idLabel.classList.add('order-id');
+      idLabel.textContent = 'ID: ';
+
+      const orderLink = document.createElement('a');
+      orderLink.textContent = order.trans_id;
+      orderLink.href = `/transactions/order-detail/${order.trans_id}`;
+      orderLink.classList.add('order-link');
+
+      const totalLabel = document.createElement('span');
+      totalLabel.classList.add('order-total');
+      totalLabel.textContent = 'Total: ';
+
+      const totalAmount = document.createElement('span');
+      totalAmount.classList.add('order-amount');
+      totalAmount.textContent = formatCurrency(order.total, 'USD');
+
+      const dateLabel = document.createElement('span');
+      dateLabel.classList.add('order-date');
+      dateLabel.textContent = 'Date: ';
+
+      const dateValue = document.createElement('span');
+      dateValue.classList.add('order-date-value');
+      dateValue.textContent = formatDate(order.createdAt);
+
+      orderElement.appendChild(idLabel);
+      orderElement.appendChild(orderLink);
+      orderElement.appendChild(document.createElement('br'));
+      orderElement.appendChild(totalLabel);
+      orderElement.appendChild(totalAmount);
+      orderElement.appendChild(document.createElement('br'));
+      orderElement.appendChild(dateLabel);
+      orderElement.appendChild(dateValue);
+
+      ordersListElement.appendChild(orderElement);
+    });
+  };
+
+  // Function to handle the calendar selection
+  const handleCalendarSelection = (date) => {
+    const salesResults = calculateSalesResults(date);
+    populateSalesResults(salesResults);
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    handleCalendarSelection(todayOrders);
+  });
+
+  // Event listener for the calendar dropdown items
+  document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+      switch (item.textContent.trim()) {
+        case 'Today':
+          handleCalendarSelection(todayOrders)
+          break;
+        case 'Yesterday':
+          handleCalendarSelection(yesterdayOrders);
+          break;
+        case 'Last 7 Days':
+          handleCalendarSelection(sevenDaysOrders);
+          break;
+        case 'Last 30 Days':
+          handleCalendarSelection(thirtyDaysOrders);
+          break;
+        default:
+          break;
+      }
+    });
+  });
+
+  ////=========================== Product Graph ==================================== 
+
+  const orderDate = orders.map(order => order.createdAt.split('GMT')[0]);
+  //format date
+  const dates = orderDate.map(date => {
+    const match = date.split(' ');
+    return `${match[1]} ${match[2]}, ${match[3]}`; //Nov 29, 2023
+  });
+
+  const dateCounts = dates.reduce((counts, date) => {
+    counts[date] = (counts[date] || 0) + 1;
+    return counts;
+  }, {});
+  //It just show maximum 7 days recently
+  const dateFilter = Array.from(new Set(dates));
+  const truncatedDates = dateFilter.slice(-7);
+  const truncatedDateCounts = Object.fromEntries(
+    Object.entries(dateCounts).filter(([date]) => truncatedDates.includes(date))
+  );
+
+  function createLineChart(labels, definition, data, chartId, type) {
+    const chartData = {
+      labels: labels,
+      datasets: [{
+        label: definition,
+        backgroundColor: 'rgb(190, 99, 255,0.75)',
+        fill: false,
+        borderColor: 'rgb(190, 99, 255)',
+        data: data,
+      }]
+    };
+
+    const ctx = document.getElementById(chartId).getContext('2d');
+    return new Chart(ctx, {
+      type: type,
+      data: chartData,
+    });
+  }
+
+  createLineChart(truncatedDates, 'Orders', Object.values(truncatedDateCounts), 'orders-chart', 'line')
+
+  const products = Array.from(document.querySelectorAll('#products')).map(element => JSON.parse(element.innerText));
+
+  const productList = products;
+  const productName = products.map(product => product.name);
+  const productAmount = products.map(product => product.amount);
+
+  createLineChart(productName, 'Products', productAmount, 'products-chart', 'bar')
+</script>

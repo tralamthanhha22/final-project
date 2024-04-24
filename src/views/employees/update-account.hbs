@@ -1,0 +1,152 @@
+{{!-- Head --}}
+<title>Update Account</title>
+{{!-- Body --}}
+
+<div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light">Account Settings /</span> Account</h4>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="nav nav-pills flex-column flex-md-row mb-3">
+                    <li class="nav-item"><a class="nav-link" href="/employees/account-detail">
+                            <i class="bx bx-user me-1"></i> Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="javascript:void(0);">
+                            <i class="bx bx-refresh me-1"></i> Account
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employees/change-password">
+                            <i class="bx bx-key me-1"></i> Change Password
+                        </a>
+                    </li>
+                </ul>
+                <!-- Update Profile -->
+                <div class="card mb-4">
+                    <h5 class="card-header">Update Profile</h5>
+                    <!-- Account -->
+                    <form id="formAccountSettings" method="POST" enctype="multipart/form-data">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                <img src="{{employee.avatar}}" alt="user-avatar" class="d-block rounded" height="100"
+                                    width="100" id="uploadedAvatar" />
+                                <!-- Button Upload & Reset -->
+                                <div class="button-wrapper">
+                                    <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
+                                        <span class="d-none d-sm-block">Upload new photo</span>
+                                        <i class="bx bx-upload d-block d-sm-none"></i>
+                                        <input type="file" id="upload" class="account-file-input" hidden
+                                            accept="image/png, image/jpeg" name="avatar" />
+                                    </label>
+                                    <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                                        <i class="bx bx-reset d-block d-sm-none"></i>
+                                        <span class="d-none d-sm-block">Reset</span>
+                                    </button>
+                                    <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-0" />
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label for="fullName" class="form-label">Full Name</label>
+                                    <input class="form-control" type="text" id="fullName" name="fullname"
+                                        value="{{employee.fullname}}" autofocus />
+                                </div>
+
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="phoneNumber">Phone Number</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text">VN (+84)</span>
+                                        <input type="text" id="phoneNumber" name="phone" class="form-control"
+                                            value="{{employee.phone}}" />
+                                    </div>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="address" class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="address" name="address"
+                                        value="{{employee.address}}" />
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <button type="submit" class="btn btn-primary me-2" id="saveChangesBtn" disabled>Save
+                                    changes</button>
+                                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- / Content -->
+    <div class="content-backdrop fade"></div>
+</div>
+
+<script>
+    // Get the form element
+    const form = document.getElementById('formAccountSettings');
+
+    // Get the save changes button element
+    const saveChangesBtn = document.getElementById('saveChangesBtn');
+
+    // Get the initial form values on page load
+    const initialFormValues = getFormValues(form);
+
+    // Add event listeners to form fields
+    form.addEventListener('input', handleFormInput);
+
+    // Function to get the current form values
+    function getFormValues(form) {
+        const formValues = {};
+        const elements = form.elements;
+
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            if (element.name) {
+                formValues[element.name] = element.value;
+            }
+        }
+
+        return formValues;
+    }
+
+    // Function to handle form input events
+    function handleFormInput() {
+        const currentFormValues = getFormValues(form);
+        const hasChanges = hasObjectChanged(initialFormValues, currentFormValues);
+        saveChangesBtn.disabled = !hasChanges;
+    }
+
+    // Function to compare two objects for changes
+    function hasObjectChanged(obj1, obj2) {
+        return JSON.stringify(obj1) !== JSON.stringify(obj2);
+    }
+
+    const uploadInput = document.getElementById('upload');
+    const uploadedAvatar = document.getElementById('uploadedAvatar');
+    const resetButton = document.querySelector('.account-image-reset');
+
+    uploadInput.addEventListener('change', handleFileUpload);
+    resetButton.addEventListener('click', resetImage);
+
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            uploadedAvatar.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    function resetImage() {
+        uploadedAvatar.src = "{{employee.avatar}}";
+        uploadInput.value = null; // Reset the file input
+    }
+</script>

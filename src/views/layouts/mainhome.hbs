@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en" class="light-style layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default" data-assets-path="/">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/image/logo.png" />
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/vendor/fonts/boxicons.css" />
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="/vendor/css/core.css" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+  <!-- Vendors CSS -->
+  <link rel="stylesheet" href="/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+  <!-- Helpers -->
+  <script src="/vendor/js/helpers.js"></script>
+  <script src="/javascript/config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+</head>
+
+<body>
+  <!-- Layout wrapper -->
+  <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+      <!-- Menu -->
+      <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <!-- logo -->
+        <div class="app-brand demo pt-3">
+          <a href="/" class="app-brand-link">
+            <span class="app-brand-logo demo">
+              <img src="/image/logo.png" alt="Logo" style="width: 200px; height: 55px;">
+            </span>
+          </a>
+
+          <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+          </a>
+        </div>
+
+        <div class="menu-inner-shadow"></div>
+
+        <ul class="menu-inner py-1">
+          <!-- Dashboards -->
+          <li class="menu-item" style="margin-top: 15px;">
+            <a href="/" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-home-circle"></i>
+              <div data-i18n="Dashboards">Dashboards</div>
+            </a>
+          </li>
+
+          <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Employees</span>
+          </li>
+
+          <!-- Account settings -->
+          <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-dock-top"></i>
+              <div data-i18n="Account Settings">Account Settings</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item">
+                <a href="/employees/account-detail" class="menu-link">
+                  <div data-i18n="Account">Account Detail</div>
+                </a>
+              </li>
+              <li class="menu-item">
+                <a href="/employees/update-account" class="menu-link">
+                  <div data-i18n="Account">Update Account</div>
+                </a>
+              </li>
+              <li class="menu-item">
+                <a href="/employees/change-password" class="menu-link">
+                  <div data-i18n="Change Password">Change Password</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Employees -->
+          {{#eq employee.level 'admin'}}
+          <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-user"></i>
+              <div data-i18n="Employees">Employees</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item">
+                <a href="/employees/employee-list" class="menu-link">
+                  <div data-i18n="Employee List">Employee List</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          {{/eq}}
+
+          <!-- eCommerce -->
+          <li class="menu-header small text-uppercase"><span class="menu-header-text">eCommerce</span></li>
+
+          <!-- Products -->
+          <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-cart-alt"></i>
+              <div data-i18n="Products">Products</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item">
+                <a href="/products/product-list" class="menu-link">
+                  <div data-i18n="Product List">Product List</div>
+                </a>
+              </li>
+              {{#eq employee.level 'admin'}}
+              <li class="menu-item">
+                <a href="/products/add-product" class="menu-link">
+                  <div data-i18n="Add Product">Add Product</div>
+                </a>
+              </li>
+              {{/eq}}
+            </ul>
+          </li>
+
+          <!-- Order -->
+          <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-food-menu"></i>
+              <div data-i18n="Order">Orders</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item">
+                <a href="/transactions/order-list" class="menu-link">
+                  <div data-i18n="Order List">Order List</div>
+                </a>
+              </li>
+              <li class="menu-item">
+                <a href="/transactions/create-order" class="menu-link">
+                  <div data-i18n="Create Order">Create Order</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Customer -->
+          <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+              <i class="menu-icon tf-icons bx bx-user-pin"></i>
+              <div data-i18n="Customer">Customers</div>
+            </a>
+            <ul class="menu-sub">
+              <li class="menu-item">
+                <a href="/customers/customer-list" class="menu-link">
+                  <div data-i18n="Customer List">Customer List</div>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="menu-header small text-uppercase"><span class="menu-header-text">Statistic & Report</span></li>
+
+          <!-- Report & Analysis -->
+          <li class="menu-item">
+            <a href="/transactions/report-and-analysis" class="menu-link">
+              <i class="menu-icon tf-icons bx bx-chart"></i>
+              <div data-i18n="Report and Analysis">Report & Analysis</div>
+            </a>
+          </li>
+
+        </ul>
+      </aside>
+
+      <!-- Layout container -->
+      <div class="layout-page">
+        <!-- Navbar -->
+        <nav
+          class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+          id="layout-navbar">
+          <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+            <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+              <i class="bx bx-menu bx-sm"></i>
+            </a>
+          </div>
+
+          <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+            <!-- Search -->
+            <div class="navbar-nav align-items-center">
+              <div class="nav-item d-flex align-items-center">
+                <i class="bx bx-search fs-4 lh-0"></i>
+                <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2" placeholder="Search..."
+                  aria-label="Search..." />
+              </div>
+            </div>
+            <!-- /Search -->
+
+            <ul class="navbar-nav flex-row align-items-center ms-auto">
+              <!-- User -->
+              <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                  <div class="avatar avatar-online">
+                    <img src="{{employee.avatar}}" alt class="w-px-40 h-auto rounded-circle" style="width: 20cm; height: 3cm"/>
+                  </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item" href="#">
+                      <div class="d-flex">
+                        <div class="flex-shrink-0 me-3">
+                          <div class="avatar avatar-online">
+                            <img src="{{employee.avatar}}" alt class="w-px-40 h-auto rounded-circle" />
+                          </div>
+                        </div>
+                        <div class="flex-grow-1">
+                          <span class="fw-medium d-block">{{employee.fullname}}</span>
+                          <small class="text-muted">{{employee.level}}</small>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                  <li>
+                    <div class="dropdown-divider"></div>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/employees/account-detail">
+                      <i class="bx bx-user me-2"></i>
+                      <span class="align-middle">My Profile</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/employees/update-account">
+                      <i class="bx bx-cog me-2"></i>
+                      <span class="align-middle">Settings</span>
+                    </a>
+                  </li>
+                  <li>
+                    <div class="dropdown-divider"></div>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="/employees/logout">
+                      <i class="bx bx-power-off me-2"></i>
+                      <span class="align-middle">Log Out</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!--/ User -->
+            </ul>
+          </div>
+        </nav>
+
+        <!-- BODY -->
+        {{{body}}}
+      </div>
+    </div>
+    <div class="layout-overlay layout-menu-toggle"></div>
+  </div>
+
+  <!-- Core JS -->
+  <script src="/vendor/libs/jquery/jquery.js"></script>
+  <script src="/vendor/libs/popper/popper.js"></script>
+  <script src="/vendor/js/bootstrap.js"></script>
+  <script src="/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <script src="/vendor/js/menu.js"></script>
+
+  <!-- Main JS -->
+  <script src="/javascript/mainhome.js"></script>
+</body>
+
+</html>

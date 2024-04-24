@@ -1,0 +1,159 @@
+{{!-- Head --}}
+<title>Edit Product</title>
+{{!-- Body --}}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">Products /</span><span> Edit Product</span>
+        </h4>
+
+        <div class="app-ecommerce">
+            <!-- Edit Product -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <div class="d-flex flex-column justify-content-center">
+                    <h4 class="mb-1 mt-3">Edit Product</h4>
+                    <p class="text-muted">Edit a product with below informations</p>
+                </div>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" id="edit-product-form">
+                <div class="row">
+                    <div class="col-12 col-lg-8">
+                        <!-- Product Information -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-tile mb-0">Product information</h5>
+                            </div>
+                            <div class="card-body">
+                                {{!-- Name --}}
+                                <div>
+                                    <label class="form-label" for="pro_name">Name</label>
+                                    <input type="text" class="form-control" id="pro_name"
+                                        name="pro_name" aria-label="Product Name" value="{{product.pro_name}}">
+                                </div>
+                                {{!-- Category --}}
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label" for="ProductCategory">Category</label>
+                                        <select id="ProductCategory" class="form-select text-capitalize" name="category">
+                                            <option value="Phone">Phone</option>
+                                            <option value="Accessories">Accessories</option>
+                                            <option value="Tablet">Tablet</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <div class="col"><label class="form-label" for="quantity">Quantity</label>
+                                            <input type="text" class="form-control" id="quantity" placeholder="100"
+                                                name="amount" aria-label="Quantity" value="{{product.amount}}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Description -->
+                                <div>
+                                    <label class="form-label">Description
+                                        <span class="text-muted">(Optional)</span>
+                                    </label>
+                                    <textarea class="form-control" id="textareaInput" rows="5"
+                                        placeholder="Enter description" name="description"
+                                        value="{{product.description}}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{!-- Price --}}
+                    <div class="col-12 col-lg-4">
+                        <!-- Pricing Card -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Pricing</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- import Price -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="import_price">Import Price</label>
+                                    <input type="number" class="form-control" id="import_price"
+                                        placeholder="Import Price" name="import_price" aria-label="import price"
+                                        value="{{product.import_price}}">
+                                </div>
+                                <!-- retail Price -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="retail_price">Retail
+                                        Price</label>
+                                    <input type="number" class="form-control" id="retail_price"
+                                       name="retail_price" aria-label="retail price"
+                                        value="{{product.retail_price}}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0 mb-4">Media</h5>
+                                <span id="btnBrowse" class="mb-2">
+                                    <input type="file" name="product_image" multiple>
+                                </span>
+                            </div>
+                            <input type="text" name="old_images" value="{{product.images}}"hidden>
+                            {{#each product.images}}
+                                <img src="{{this}}" alt="" style="width: 100px;" class="m-4">
+                            {{/each}}<br>
+                        </div>
+                    </div>
+                </div>
+                {{!-- submit --}}
+                <div class="d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary ml-2" id="saveChangesBtn" disabled>Save changed</button>
+                    <button type="reset" class="btn btn-label-secondary">Discard</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="content-backdrop fade"></div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Assume you have a variable named selectedCategory
+        var selectedCategory = `{{product.category}}`;
+        // Set the selected value based on the variable
+        document.getElementById("ProductCategory").value = selectedCategory;
+    });
+
+    // Get the form element
+    const form = document.getElementById('edit-product-form');
+
+    // Get the save changes button element
+    const saveChangesBtn = document.getElementById('saveChangesBtn');
+
+    // Get the initial form values on page load
+    const initialFormValues = getFormValues(form);
+
+    // Add event listeners to form fields
+    form.addEventListener('input', handleFormInput);
+
+    // Function to get the current form values
+    function getFormValues(form) {
+        const formValues = {};
+        const elements = form.elements;
+
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            if (element.name) {
+                formValues[element.name] = element.value;
+            }
+        }
+
+        return formValues;
+    }
+
+    // Function to handle form input events
+    function handleFormInput() {
+        const currentFormValues = getFormValues(form);
+        const hasChanges = hasObjectChanged(initialFormValues, currentFormValues);
+        saveChangesBtn.disabled = !hasChanges;
+    }
+
+    // Function to compare two objects for changes
+    function hasObjectChanged(obj1, obj2) {
+        return JSON.stringify(obj1) !== JSON.stringify(obj2);
+    }
+</script>

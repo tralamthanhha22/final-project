@@ -1,0 +1,450 @@
+{{!-- Head --}}
+<title>Product List</title>
+<script src="//code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.8.0/dist/JsBarcode.all.min.js"></script>
+{{!-- Body --}}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">Product /</span> Product List
+        </h4>
+
+        {{!-- Search filter --}}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Search Filter</h5>
+            </div>
+
+            <div class="card-datatable table-responsive">
+                <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                    <div class="row mx-2 p-2">
+                        <div class="col-md-12">
+                            <div
+                                class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0">
+                                {{!-- Category --}}
+                                <div class="col-md-6 product_category me-2">
+                                    <select id="ProductCategory" class="form-select text-capitalize"
+                                        onchange="filterTable()">
+                                        <option value="">Category</option>
+                                        <option value="Phone">Phone</option>
+                                        <option value="Accessories">Accessories</option>
+                                        <option value="Tablet">Tablet</option>
+                                    </select>
+                                </div>
+                                <!-- Search by name -->
+                                <div id="DataTables_Table_0_filter" class="dataTables_filter  me-2">
+                                    <label>
+                                        <input type="search" class="form-control" placeholder="Search.."
+                                            aria-controls="DataTables_Table_0" oninput="searchProduct(this.value)">
+                                    </label>
+                                </div>
+                                {{#eq employee.level 'admin'}}
+                                <!-- Add new -->
+                                <a class="dt-button add-new btn btn-primary me-2 text-white" tabindex="0"
+                                    aria-controls="DataTables_Table_0" href="/products/add-product"><span><span
+                                            class="d-none d-sm-inline-block">Add New
+                                            Product</span></span>
+                                </a>
+                                {{/eq}}
+                                <!-- Export button -->
+                                <div class="dt-buttons">
+                                    <button class="btn btn-outline-primary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        Export
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a id="printButton" class="bx bx-printer dropdown-item"
+                                                href="javascript:void(0);"> Print</a></li>
+                                        <li><a id="generateCSVButton" class="bx bx-file dropdown-item"
+                                                href="javascript:void(0);"> CSV</a></li>
+                                        <li><a id="generatePdfButton" class="bx bxs-file-pdf dropdown-item"
+                                                href="javascript:void(0);"> PDF</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{!-- Table --}}
+                    {{#eq employee.level 'admin'}}
+                    <div style="height: 650px; overflow-y: scroll;">
+                        <table class="datatables-products table border-top dataTable no-footer dtr-column collapsed"
+                            id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                            <thead>
+                                <tr>
+                                    {{!-- Barcode --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 60px;"
+                                        aria-label="barcode: activate to sort column ascending">barcode</th>
+                                    {{!-- product --}}
+                                    <th class="sorting sorting_asc" tabindex="0" aria-controls="DataTables_Table_0"
+                                        rowspan="1" colspan="1" style="width: 104px;"
+                                        aria-label="product: activate to sort column descending" aria-sort="ascending">
+                                        product</th>
+                                    {{!-- category --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 137px;"
+                                        aria-label="category: activate to sort column ascending">category</th>
+                                    {{!-- import price --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 60px;"
+                                        aria-label="import price: activate to sort column ascending">import price</th>
+                                    {{!-- retail price --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 60px;"
+                                        aria-label="retail price: activate to sort column ascending">retail price</th>
+                                    {{!-- quantity --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 39px;"
+                                        aria-label="quantit: activate to sort column ascending">quantity</th>
+                                    {{!-- action --}}
+                                    <th class="sorting" rowspan="1" colspan="1" style="width: 76px;"
+                                        aria-label="Actions">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {{#each products}}
+                                <tr data-category="{{category}}" id="tr{{pid}}">
+                                    {{!-- barcode --}}
+                                    <td id="barcode">
+                                        <svg id="barcode{{pid}}">
+                                            <script>
+                                                var myIdFromNodeJS = {{pid}};
+                                                var pid = '#barcode'+ myIdFromNodeJS
+                                                JsBarcode(pid, myIdFromNodeJS, {
+                                                    fontSize: 15,
+                                                    width: 1, // Adjust the width to your desired value
+                                                    height: 35, // Adjust the height to your desired value
+                                                    background: "#ffffff",
+                                                    lineColor: "black",
+                                                    margin: 40,
+                                                    marginLeft: 40
+                                                })
+                                            </script>
+                                        </svg>
+                                    </td>
+                                    {{!-- product --}}
+                                    <td class="sorting_1">
+                                        <div class="d-flex justify-content-start align-items-center product-name">
+                                            <div class="avatar-wrapper">
+                                                <div class="avatar avatar me-2 rounded-2 bg-label-secondary"><img
+                                                        src="{{{images.[0]}}}" alt="Product" class="rounded-2"></div>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <h6 class="text-body text-nowrap mb-0" id="product_name">{{pro_name}}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {{!-- Category --}}
+                                    <td>
+                                        <span class="text-truncate d-flex align-items-center">
+                                            <span
+                                                class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-info me-2">
+                                                <i class="bx bx-mobile-alt"></i>
+                                            </span> {{category}}
+                                        </span>
+                                    </td>
+                                    {{!-- import price --}}
+                                    <td class="dtr" id="import_price"><span>${{formatCurrency import_price}}</span></td>
+                                    {{!-- retail price --}}
+                                    <td class="dtr" id="retail_price"><span>${{formatCurrency retail_price}}</span></td>
+                                    {{!-- quantity --}}
+                                    <td class="" style=""><span>{{amount}}</span></td>
+                                    {{!-- actions --}}
+                                    <td class="dtr">
+                                        <div class="d-inline-block text-nowrap">
+                                            <a class="btn btn-sm btn-icon" href="/products/edit-product/{{pid}}">
+                                                <i class="bx bx-edit"></i>
+                                            </a>
+                                            <a class="btn btn-sm btn-icon" onclick="delete_click(event, {{pid}})">
+                                                <i class="bx bx-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <div style="height: 650px; overflow-y: scroll;">
+                        <table class="datatables-products table border-top dataTable no-footer dtr-column collapsed"
+                            id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" style="width: 1391px;">
+                            <thead>
+                                <tr>
+                                    {{!-- Barcode --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 60px;"
+                                        aria-label="barcode: activate to sort column ascending">barcode</th>
+                                    {{!-- product --}}
+                                    <th class="sorting sorting_asc" tabindex="0" aria-controls="DataTables_Table_0"
+                                        rowspan="1" colspan="1" style="width: 104px;"
+                                        aria-label="product: activate to sort column descending" aria-sort="ascending">
+                                        product</th>
+                                    {{!-- category --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 137px;"
+                                        aria-label="category: activate to sort column ascending">category</th>
+                                    {{!-- retail price --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 60px;"
+                                        aria-label="retail price: activate to sort column ascending">retail price</th>
+                                    {{!-- quantity --}}
+                                    <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1"
+                                        colspan="1" style="width: 39px;"
+                                        aria-label="quantit: activate to sort column ascending">quantity</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {{#each products}}
+                                <tr data-category="{{category}}" id="tr{{pid}}">
+                                    {{!-- barcode --}}
+                                    <td id="barcode">{{pid}}</td>
+                                    {{!-- product --}}
+                                    <td class="sorting_1">
+                                        <div class="d-flex justify-content-start align-items-center product-name">
+                                            <div class="avatar-wrapper">
+                                                <div class="avatar avatar me-2 rounded-2 bg-label-secondary"><img
+                                                        src="{{{images.[0]}}}" alt="Product" class="rounded-2"></div>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <h6 class="text-body text-nowrap mb-0" id="product_name">{{pro_name}}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {{!-- Category --}}
+                                    <td>
+                                        <span class="text-truncate d-flex align-items-center">
+                                            <span
+                                                class="avatar-sm rounded-circle d-flex justify-content-center align-items-center bg-label-info me-2">
+                                                <i class="bx bx-mobile-alt"></i>
+                                            </span> {{category}}
+                                        </span>
+                                    </td>
+                                    {{!-- retail price --}}
+                                    <td class="dtr" id="retail_price"><span>${{formatCurrency retail_price}}</span></td>
+                                    {{!-- quantity --}}
+                                    <td class="" style=""><span>{{amount}}</span></td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{/eq}}
+
+                    <div class="row mx-2 mt-2">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">
+                                Displaying {{count}} entries</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Table to Print, Export-->
+    {{#eq employee.level 'admin'}}
+    <table id="printTableContainer" style="display: none;" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Barcode</th>
+                <th scope="col">Product</th>
+                <th scope="col">Category</th>
+                <th scope="col">Import Price</th>
+                <th scope="col">Retail Price</th>
+                <th scope="col">Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each products}}
+            <tr data-category="{{category}}">
+                {{!-- barcode --}}
+                <td id="barcode">{{pid}}</td>
+                {{!-- product --}}
+                <td>{{pro_name}}</td>
+                {{!-- Category --}}
+                <td>{{category}}</td>
+                {{!-- import price --}}
+                <td id="import_price">${{import_price}}</td>
+                {{!-- retail price --}}
+                <td class="dtr" id="retail_price">${{retail_price}}</td>
+                {{!-- quantity --}}
+                <td class="" style="">{{amount}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{else}}
+    <table id="printTableContainer" style="display: none;" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Barcode</th>
+                <th scope="col">Product</th>
+                <th scope="col">Category</th>
+                <th scope="col">Retail Price</th>
+                <th scope="col">Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each products}}
+            <tr data-category="{{category}}">
+                {{!-- barcode --}}
+                <td id="barcode">{{pid}}</td>
+                {{!-- product --}}
+                <td>{{pro_name}}</td>
+                {{!-- Category --}}
+                <td>{{category}}</td>
+                {{!-- retail price --}}
+                <td class="dtr" id="retail_price">${{retail_price}}</td>
+                {{!-- quantity --}}
+                <td class="" style="">{{amount}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/eq}}
+    <div class="content-backdrop fade"></div>
+
+    {{!-- MODAL DELETE PRODUCT --}}
+    <div class="modal" tabindex="-1" role="dialog" id="delmodal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="pid" />
+                    <p>Do you want to delete <b id="pname"></b>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="delete_product()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    function delete_click(event, pid) {
+        event.preventDefault();
+        $('#pid').val(pid)
+        let name = $($('#tr' + pid + ' td')[1]).find('h6#product_name').text();
+        $('#pname').text(name)
+        $('#delmodal').modal('show');
+    }
+
+    function delete_product() {
+        let pid = $('#pid').val();
+        closeModal()
+        if (!pid) { return }
+
+        $.ajax({
+            url: '/products/delete-product/' + pid,
+            type: 'DELETE',
+            success: function (response) {
+                location.reload();
+            },
+            error: function (error) {
+                console.error('Error deleting product:', error);
+            }
+        });
+    }
+
+    function closeModal() {
+        $('#delmodal').modal('hide');
+    }
+
+    //filter table by category
+    function filterTable() {
+        var category = document.getElementById("ProductCategory").value;
+        var rows = document.querySelectorAll("#DataTables_Table_0 tbody tr, #printTableContainer tbody tr");
+
+        rows.forEach(function (row) {
+            var rowCategory = row.getAttribute("data-category");
+            row.style.display = (category === "" || rowCategory === category) ? "" : "none";
+        });
+    }
+
+    // print the table
+    document.getElementById("printButton").addEventListener("click", function () {
+        let tableHtml = document.getElementById("printTableContainer").outerHTML;
+        tableHtml = tableHtml.replace('style="display: none;"', '');
+        let html = `<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+                        <h3 class="text-center">Product List</h3>
+                        ${tableHtml}`
+        let newWindow = window.open("about:blank", "_blank");
+        newWindow.document.write(html);
+
+        setTimeout(function () {
+            newWindow.print();
+            newWindow.close();
+        }, 1000);
+    });
+
+    //export file pdf
+    document.getElementById("generatePdfButton").addEventListener("click", function () {
+        var pdf = new jsPDF();
+        var tableHtml = document.getElementById("printTableContainer").outerHTML;
+        tableHtml = tableHtml.replace('style="display: none;"', '');
+        let html = `<h3 class="text-center"> Product List </h3> ${tableHtml}`
+        html2pdf().from(html).save();
+    });
+
+    // export file csv 
+    document.getElementById("generateCSVButton").addEventListener("click", function () {
+        var csv_data = Array.from(document.querySelectorAll("#printTableContainer tbody tr"))
+            .map(row => Array.from(row.querySelectorAll('td,th')).map(cell => cell.innerHTML).join(","))
+            .join('\n');
+        downloadCSVFile(csv_data);
+    })
+
+    function downloadCSVFile(csv_data) {
+        CSVFile = new Blob([csv_data], {
+            type: "text/csv"
+        });
+        var temp_link = document.createElement('a');
+        // Download csv file
+        temp_link.download = "file.csv";
+        var url = window.URL.createObjectURL(CSVFile);
+        temp_link.href = url;
+
+        // This link should not be displayed
+        temp_link.style.display = "none";
+        document.body.appendChild(temp_link);
+
+        // Automatically click the link to download
+        temp_link.click();
+        document.body.removeChild(temp_link);
+    }
+
+    function searchProduct(searchValue) {
+        const rows = document.querySelectorAll('#DataTables_Table_0 tbody tr');
+
+        rows.forEach(row => {
+            const nameElement = row.querySelector('.product-name h6');
+            const barcodeElement = row.querySelector('#barcode');
+            const name = nameElement.textContent.toLowerCase();
+            const barcode = barcodeElement.textContent.toLowerCase();
+
+            if (name.includes(searchValue.toLowerCase()) || barcode.includes(searchValue.toLowerCase())) {
+                row.style.display = ''; // Show the row
+            } else {
+                row.style.display = 'none'; // Hide the row
+            }
+        });
+    }
+</script>

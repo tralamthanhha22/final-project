@@ -1,0 +1,120 @@
+{{!-- Head --}}
+<title>Order Detail</title>
+{{!-- Body --}}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="py-3 mb-4">
+            <span class="text-muted fw-light">Orders / Order List /</span> Order Details
+        </h4>
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+            <div class="d-flex flex-column justify-content-center">
+                <h5 class="mb-1 mt-3">Order #{{transaction.trans_id}}</h5>
+                <p class="text-body">{{transaction.createdAt}}</p>
+            </div>
+        </div>
+
+        <!-- Order Details Table -->
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title m-0">Order Detail</h5>
+                    </div>
+                    <div class="card-datatable table-responsive">
+                        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                            {{!-- TABLE ORDER DETAIL --}}
+                            <table class="datatables-order-details table dataTable no-footer dtr-column"
+                                id="DataTables_Table_0">
+                                <thead>
+                                    <tr>
+                                        <th class="w-50 sorting_disabled" rowspan="1" colspan="1" style="width: 354px;"
+                                            aria-label="products">products</th>
+                                        <th class="w-25 sorting_disabled" rowspan="1" colspan="1" style="width: 154px;"
+                                            aria-label="price">price</th>
+                                        <th class="w-25 sorting_disabled" rowspan="1" colspan="1" style="width: 144px;"
+                                            aria-label="qty">qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each transaction.details}}
+                                    <tr>
+                                        <td class="sorting_1">
+                                            <div class="d-flex justify-content-start align-items-center text-nowrap">
+                                                <div class="avatar-wrapper">
+                                                    <div class="avatar me-2"><img
+                                                            src="{{image}}"
+                                                            alt="iphone15" class="rounded-2"></div>
+                                                </div>
+                                                <div class="d-flex flex-column">
+                                                    <h6 class="text-body mb-0">{{name}}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        {{!-- Price --}}
+                                        <td><span>${{formatCurrency price}}</span></td>
+                                        {{!-- Quantity --}}
+                                        <td><span class="text-body">{{quantity}}</span></td>
+                                        </td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center m-3 mb-2 p-1">
+                            <div class="order-calculations">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="w-px-100">Subtotal:</span>
+                                    <span class="text-heading">${{formatCurrency transaction.total}}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="w-px-100">Tax:</span>
+                                    <span class="text-heading">$0</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="w-px-100 mb-0">Total:</h6>
+                                    <h6 class="mb-0">${{formatCurrency transaction.total}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{!-- Cutomer Details --}}
+            <div class="col-12 col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="card-title m-0">Customer details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-start align-items-center mb-4">
+                            <div class="avatar me-2">
+                                <span class="avatar-initial rounded-circle bg-label-success">{{customer.name.[0]}}</span>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <a href="/customers/customer-detail/{{customer.phone}}" class="text-body text-nowrap">
+                                    <h6 class="mb-0">{{customer.name}}</h6>
+                                </a>
+                                <small class="text-muted">Customer ID: #{{customer.phone}}</small>
+                            </div>
+                        </div>
+                        {{!-- History order --}}
+                        {{!-- <div class="d-flex justify-content-start align-items-center mb-4">
+                            <span
+                                class="avatar rounded-circle bg-label-success me-2 d-flex align-items-center justify-content-center"><i
+                                    class="bx bx-cart-alt bx-sm lh-sm"></i></span>
+                            <h6 class="text-body text-nowrap mb-0">12 Orders</h6>
+                        </div> --}}
+                        {{!-- Contact info --}}
+                        <div class="d-flex justify-content-between">
+                            <h6>Contact info</h6>
+                        </div>
+                        <p class=" mb-1">Address: {{customer.address}}</p>
+                        <p class=" mb-0">Mobile: {{customer.phone}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-backdrop fade"></div>
+</div>

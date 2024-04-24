@@ -1,0 +1,146 @@
+{{!-- Head --}}
+<title>Sale Rate of Products</title>
+{{!-- Body --}}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div id="container">
+            {{!-- general --}}
+            <div id="freqValues" hidden>
+                {{freqValues}}
+            </div>
+            <div id="freqProname" hidden>
+                {{freqKeys}}
+            </div>
+            {{!-- by date --}}
+            <div id="freqByDateKeys" hidden>
+                {{freqByDateKeys}}
+            </div>
+            <div id="freqPronameDatesKeys" hidden>
+                {{freqPronameDatesKeys}}
+            </div>
+            <div id="freqPronameDatesValues" hidden>
+                {{freqPronameDatesValues}}
+            </div>
+            <div class="card">
+                <div class="card-header header-elements">
+                    <div class="d-flex flex-column">
+                        <h5 class="card-title mb-0">Total Sale Rate of Products</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header header-elements">
+                    <div class="d-flex flex-column">
+                        <h5 class="card-title mb-0">Sale Rates's Products by Day</h5>
+                        <select id="timeline" name="timeline" class="btn btn-primary mt-2" onchange="ratingByDate()"></select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChart1"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function splitStringToArray(string, delimiter) {
+        return string.split(delimiter).filter(Boolean);
+    }
+
+    function createOption(element, value, text) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        element.appendChild(option);
+    }
+
+    function createChart(canvas, labels, data, max) {
+        return new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Buy Rates",
+                    backgroundColor: 'rgb(190, 99, 255,0.75)',
+                    fill: false,
+                    borderColor: 'rgb(190, 99, 255)',
+                    data: data,
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            max: max
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    // Fetch DOM elements
+    const freqByDateKeys = document.getElementById("freqByDateKeys").innerHTML;
+    const freqPronameDatesKeys = document.getElementById("freqPronameDatesKeys").innerHTML;
+    const freqPronameDatesValues = document.getElementById("freqPronameDatesValues").innerHTML;
+    const freqKeys = document.getElementById("freqProname").innerHTML;
+    const freqValues = document.getElementById("freqValues").innerHTML;
+    const timelineSelect = document.getElementById('timeline');
+    const myChart1Canvas = document.getElementById('myChart1').getContext('2d');
+    const myChartCanvas = document.getElementById('myChart').getContext('2d');
+
+    // Split strings into arrays
+    const freqByDateKeysSplit = splitStringToArray(freqByDateKeys, ',');
+    const freqPronameDatesKeysSplit = splitStringToArray(freqPronameDatesKeys, '/~o');
+    const freqPronameDatesValuesSplit = splitStringToArray(freqPronameDatesValues, '/~o');
+    const freqKeysSplit = splitStringToArray(freqKeys, ',');
+    const freqValuesSplit = splitStringToArray(freqValues, ',');
+
+    // Remove the last element from the arrays
+    freqPronameDatesKeysSplit.pop();
+    freqPronameDatesValuesSplit.pop();
+
+    // Populate timeline select element
+    for (let i = 0; i < freqByDateKeysSplit.length; i++) {
+        createOption(timelineSelect, freqByDateKeysSplit[i], freqByDateKeysSplit[i]);
+    }
+
+    // Function to display product rates by selected timeline
+    function ratingByDate() {
+        const timelineChoose = timelineSelect.value;
+        let proname = [];
+        let rates = [];
+
+        for (let i = 0; i < freqByDateKeysSplit.length; i++) {
+            if (freqByDateKeysSplit[i] === timelineChoose) {
+                proname = splitStringToArray(freqPronameDatesKeysSplit[i].substring(1), ',');
+                rates = splitStringToArray(freqPronameDatesValuesSplit[i].substring(1), ',');
+                break;
+            }
+        }
+
+        createChart(myChart1Canvas, proname, rates, 10);
+    }
+
+    // Parse the frequency values into numbers and populate the arrays
+    const freqVal = freqValuesSplit.slice(0, -1).map(value => parseInt(value));
+    const freqProname = freqKeysSplit.slice(0, -1);
+
+    // Create the general chart
+    const myData = {
+        labels: freqProname,
+        datasets: [{
+            label: "Buy Rates",
+            backgroundColor: 'rgb(190, 99, 255,0.75)',
+            fill: false,
+            borderColor: 'rgb(190, 99, 255)',
+            data: freqVal,
+        }]
+    };
+    createChart(myChartCanvas, freqProname, freqVal, 20);
+</script>
